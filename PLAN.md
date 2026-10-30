@@ -107,12 +107,15 @@ We have **22 days** (Oct 29 → Nov 20, 2026). Below is a tight but achievable p
 - **Deliverable**: Comparison table (`docs/results/lane_detection.md`), side-by-side image grid (`docs/results/lanes/lane_comparison_grid.png`), test results (59/59 passed)
 
 ### Phase 5 — Depth Estimation (Days 13–14: Nov 10–11)
-- [ ] MiDaS small inference on BDD100K samples
-- [ ] Calibration: relative depth → metric distance (using known object sizes or CARLA ground truth)
-- [ ] Per-object distance extraction from bounding boxes
-- [ ] TTC (time-to-collision) estimation
-- [ ] Unit tests for distance math
-- **Deliverable**: Distance overlay images, error-by-distance-band table
+- [x] MiDaS small inference on driving clips & camera frames (DepthEstimator.predict(frame))
+- [x] Calibration: collected 650 (MiDaS value, true metres) pairs using CARLA 24-bit ground truth depth
+- [x] Inverse-depth linear fit (1/Z = a * d_rel + b, R2=0.9979) vs. polynomial regression (R2=0.9980), stored in configs/depth_calibration.yaml
+- [x] Per-object distance extraction from lower-third bounding box median depth to suppress road/sky background bleed
+- [x] Pinhole camera cross-check (Z = f * H_real / h_pixels) for cars (1.5m) and pedestrians (1.7m) using CARLA camera intrinsics (f=640 px)
+- [x] Time-to-collision (TTC) per track from smoothed moving-average distance rate of change with Critical/Warning thresholds
+- [x] Distance band error report across 0–10 m, 10–30 m, and 30+ m
+- [x] Unit tests for distance math, calibration, pinhole formula, and TTC
+- **Deliverable**: Calibrated parameters (configs/depth_calibration.yaml), evaluation report (docs/results/depth_evaluation.md), side-by-side comparison grid (docs/results/depth/depth_comparison_grid.png), test results (10/10 passed)
 
 ### Phase 6 — ONNX & TensorRT Optimization (Days 15–16: Nov 12–13)
 - [ ] Export YOLO to ONNX, validate output parity

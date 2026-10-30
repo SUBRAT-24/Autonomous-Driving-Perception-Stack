@@ -7,7 +7,7 @@ model:
   source: "intel-isl/MiDaS"   # torch.hub source
   device: "cuda"              # "cuda" or "cpu"
 
-# Calibration: relative depth → metric distance
+# Calibration: relative depth -> metric distance
 # Method 1: Known object sizes (for real images)
 # Method 2: CARLA ground-truth depth (for simulator)
 calibration:
@@ -23,9 +23,9 @@ calibration:
   # CARLA calibration params — used when method = "carla_gt"
   carla:
     depth_sensor_range: 1000.0  # Max depth sensor range in meters
-    # Linear fit params (will be computed during calibration)
-    scale: null
-    shift: null
+    # Calibrated inverse-depth linear fit params: 1 / Z = scale * d_rel + shift
+    scale: 0.142228
+    shift: 0.004895
 
 # Distance extraction
 distance:

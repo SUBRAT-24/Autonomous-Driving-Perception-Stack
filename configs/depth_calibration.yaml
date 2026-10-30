@@ -1,0 +1,20 @@
+calibration:
+  source: CARLA Depth Camera (24-bit encoded ground truth)
+  num_samples: 650
+  selected_model: inverse_depth_linear
+  models:
+    inverse_depth_linear:
+      formula: Z = 1.0 / (scale_a * d_rel + shift_b)
+      scale_a: 0.14222800731658936
+      shift_b: 0.004894966259598732
+      mae_m: 0.5370351076126099
+      rmse_m: 0.9529494047164917
+      r2: 0.9978771805763245
+    inverse_depth_polynomial:
+      formula: Z = 1.0 / (c2 * d_rel^2 + c1 * d_rel + c0)
+      c2: 0.0002810420385534498
+      c1: 0.14150927652017922
+      c0: 0.005106803920178403
+      mae_m: 0.5276783136298293
+      rmse_m: 0.9175134066369433
+      r2: 0.9980321364101551
