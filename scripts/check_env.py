@@ -184,16 +184,15 @@ def check_wandb():
     try:
         import wandb
         print(f"[PASS] wandb library Version: {wandb.__version__}")
-        api = wandb.Api()
         try:
-            user = api.viewer
-            print(f"[PASS] W&B Login Status: Logged in as '{user.entity}' ({user.username})")
-        except Exception:
-            # Check ~/.netrc or wandb settings
-            if wandb.api.api_key:
-                print("[PASS] W&B API Key is present in environment/config.")
+            if wandb.login(anonymous="never", timeout=2):
+                api = wandb.Api()
+                user = api.viewer
+                print(f"[PASS] W&B Login Status: Logged in as '{user.entity}' ({user.username})")
             else:
-                print("[WARN] W&B is installed but NOT logged in. Run: wandb login")
+                print("[WARN] W&B is installed but NOT logged in. Run: .venv\\Scripts\\wandb.exe login")
+        except Exception:
+            print("[WARN] W&B is installed but NOT logged in. Run: .venv\\Scripts\\wandb.exe login")
     except ImportError:
         print("[FAIL] wandb library is not installed.")
 

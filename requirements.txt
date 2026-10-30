@@ -4,9 +4,8 @@
 # Install: pip install -r requirements.txt
 # ============================================================
 
-# Core ML
-torch>=2.1.0,<2.5.0
-torchvision>=0.16.0,<0.20.0
+# Core ML (already installed with CUDA 12.1)
+# torch and torchvision installed via cu121 index
 ultralytics>=8.1.0,<8.4.0
 
 # Depth Estimation
