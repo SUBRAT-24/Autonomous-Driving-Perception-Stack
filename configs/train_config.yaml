@@ -3,12 +3,13 @@
 # ============================================================
 
 model:
-  name: "yolov8m"              # Options: yolov8n, yolov8s, yolov8m, yolov8l, yolov8x
-  pretrained: "yolov8m.pt"     # COCO-pretrained starting weights
+  name: "yolov8s"              # Options: yolov8n, yolov8s, yolov8m, yolov8l, yolov8x
+  pretrained: "yolov8s.pt"     # COCO-pretrained starting weights
+  # NOTE: Using v8s (small) due to RTX 3050 4GB VRAM. Try v8m if memory allows.
 
 training:
   epochs: 50
-  batch_size: 16               # Adjust based on GPU VRAM (8=4GB, 16=8GB, 32=16GB+)
+  batch_size: 4                # RTX 3050 (4GB) — use 8 on Colab T4, 16 on 8GB+
   imgsz: 640                   # Input image size (square)
   optimizer: "AdamW"
   lr0: 0.001                   # Initial learning rate

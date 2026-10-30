@@ -3,11 +3,18 @@
 ## Assumptions (correct me if wrong)
 | Item | Assumed | Update here |
 |------|---------|-------------|
-| OS | Windows 11 + WSL2 (Ubuntu 22.04) | |
-| GPU | NVIDIA RTX-class, ≥ 8 GB VRAM | |
-| CARLA | Not yet installed | |
-| W&B username | TBD (see HUMAN_TODO.md) | |
+| OS | Windows 11 + WSL2 (Ubuntu 22.04) | ✅ Confirmed |
+| GPU | NVIDIA RTX 3050 (4 GB VRAM) | ⚠️ Tight — see GPU notes below |
+| CARLA | Not yet installed | Will install in Phase 7 |
+| W&B username | TBD — creating account | See HUMAN_TODO.md |
 | ROS2 | Humble (will install in WSL2) | |
+
+> **⚠️ GPU Notes (RTX 3050 — 4 GB VRAM)**
+> - Training: batch_size=4, may need Colab/Kaggle for full runs
+> - Model: Start with YOLOv8s (small), try v8m if it fits
+> - TensorRT FP16 is critical — halves memory, doubles throughput
+> - CARLA + perception simultaneously is tight — may use rosbag replay fallback
+> - MiDaS small should fit fine (~200 MB)
 
 > **If any assumption is wrong, tell me and I'll adjust the plan.**
 

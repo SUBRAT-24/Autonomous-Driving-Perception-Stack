@@ -9,6 +9,13 @@ Each entry records: **what** was decided, **alternatives** considered, and **why
 - **Decision**: Start with YOLOv8m (medium) from Ultralytics.
 - **Alternatives**: YOLOv8n (nano — faster, less accurate), YOLOv8l/x (larger — better accuracy but slower), YOLOv11 (newest but less community support), Faster R-CNN (two-stage, heavier).
 - **Rationale**: YOLOv8m balances speed and accuracy well for real-time driving. Ultralytics has excellent ONNX/TRT export support. If accuracy is insufficient, we can upgrade to v8l. If speed is the bottleneck, we can drop to v8s. YOLOv11 is available as a stretch goal.
+- **Update (2026-10-29)**: Switched default to **YOLOv8s** due to RTX 3050 (4 GB VRAM). v8m may OOM at batch_size=4. Will try v8m on Colab T4 if v8s accuracy is insufficient.
+
+## DEC-007: RTX 3050 (4 GB) — GPU strategy
+- **Date**: 2026-10-29
+- **Decision**: Local training with batch_size=4 on RTX 3050. Colab/Kaggle T4 as fallback for larger batches or bigger models.
+- **Alternatives**: Only use cloud GPUs (slower iteration), buy more VRAM (not realistic for a student).
+- **Rationale**: 4 GB is tight but workable with YOLOv8s at batch=4, imgsz=640. TensorRT FP16 halves memory at inference. CARLA may need to run on Windows-side while perception runs in WSL2. If CARLA + pipeline doesn't fit in 4 GB simultaneously, we fall back to rosbag replay.
 
 ## DEC-002: BDD100K 10K subset as primary dataset
 - **Date**: 2026-10-29
