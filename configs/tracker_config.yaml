@@ -1,0 +1,35 @@
+# ============================================================
+# Tracker Configuration — ByteTrack & DeepSORT
+# ============================================================
+
+# Common settings
+common:
+  detection_threshold: 0.3    # Minimum detection confidence
+  max_age: 30                 # Frames to keep lost track alive
+  min_hits: 3                 # Minimum detections before track is confirmed
+  iou_threshold: 0.3          # IoU threshold for association
+
+# ByteTrack-specific
+bytetrack:
+  track_thresh: 0.5           # High-confidence threshold (first round)
+  track_buffer: 30            # Frames to keep lost tracks
+  match_thresh: 0.8           # IoU threshold for matching
+  # Key insight: detections below track_thresh but above 0.1
+  # are matched in a second round to recover occluded objects
+
+# DeepSORT-specific
+deepsort:
+  max_dist: 0.2               # Maximum cosine distance for re-ID matching
+  min_confidence: 0.3         # Minimum detection confidence
+  nms_max_overlap: 1.0        # NMS overlap threshold
+  max_iou_distance: 0.7       # Maximum IoU distance for matching
+  max_age: 70                 # Frames before track deletion
+  n_init: 3                   # Frames before track is confirmed
+  nn_budget: 100              # Gallery size for appearance features
+  # Re-ID model: uses a small CNN to extract 128-d appearance features
+  reid_model: "weights/deepsort_reid.pth"
+
+# Evaluation
+evaluation:
+  gt_format: "mot"            # Ground truth format (MOT Challenge)
+  metrics: ["MOTA", "IDF1", "HOTA", "ID_switches", "FP", "FN"]

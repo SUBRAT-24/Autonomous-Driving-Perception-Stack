@@ -1,0 +1,46 @@
+# ============================================================
+# Data Configuration — BDD100K
+# ============================================================
+
+dataset:
+  name: "bdd100k"
+  version: "10k"              # Use 10K subset; change to "100k" for full
+  
+  # Paths (relative to repo root)
+  raw_images_dir: "data/raw/bdd100k/images/100k"
+  raw_labels_dir: "data/raw/bdd100k/labels"
+  
+  # Processed output (YOLO format)
+  processed_dir: "data/processed/bdd100k"
+  train_images: "data/processed/bdd100k/images/train"
+  val_images: "data/processed/bdd100k/images/val"
+  train_labels: "data/processed/bdd100k/labels/train"
+  val_labels: "data/processed/bdd100k/labels/val"
+
+# BDD100K detection classes → YOLO class IDs
+# We focus on the driving-relevant classes
+classes:
+  - "pedestrian"        # 0
+  - "rider"             # 1
+  - "car"               # 2
+  - "truck"             # 3
+  - "bus"               # 4
+  - "train"             # 5
+  - "motorcycle"        # 6
+  - "bicycle"           # 7
+  - "traffic light"     # 8
+  - "traffic sign"      # 9
+
+num_classes: 10
+
+# Image properties
+image:
+  width: 1280
+  height: 720
+  channels: 3
+
+# EDA settings
+eda:
+  output_dir: "docs/results/eda"
+  sample_count: 16             # Number of sample images to visualize
+  random_seed: 42

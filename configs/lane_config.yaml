@@ -1,0 +1,48 @@
+# ============================================================
+# Lane Detection Configuration
+# ============================================================
+
+# Classical pipeline (OpenCV)
+classical:
+  # Preprocessing
+  blur_kernel: 5              # Gaussian blur kernel size
+  
+  # Canny edge detection
+  canny_low: 50               # Lower threshold
+  canny_high: 150             # Upper threshold
+  
+  # Region of Interest (fraction of image height/width)
+  roi:
+    top_y: 0.6                # Top of ROI (fraction from top)
+    bottom_y: 1.0             # Bottom of ROI
+    left_x: 0.1               # Left margin
+    right_x: 0.9              # Right margin
+  
+  # Hough Line Transform
+  hough:
+    rho: 2                    # Distance resolution (pixels)
+    theta_degrees: 1          # Angle resolution (degrees)
+    threshold: 50             # Minimum votes
+    min_line_length: 40       # Minimum line length (pixels)
+    max_line_gap: 20          # Maximum gap between line segments
+  
+  # Lane fitting
+  polyfit_degree: 2           # 1 = straight lines, 2 = curves
+  
+  # Visualization
+  line_color: [0, 255, 0]     # Green
+  line_thickness: 3
+  fill_alpha: 0.3             # Transparency for lane fill
+
+# Segmentation model
+segmentation:
+  model_name: "lane_seg"      # Placeholder — will be defined in Phase 4
+  model_path: "weights/lane_seg.pt"
+  imgsz: 640
+  conf_threshold: 0.5
+  device: "0"
+
+# Evaluation
+evaluation:
+  output_dir: "docs/results/lane"
+  metrics: ["IoU", "accuracy", "F1"]

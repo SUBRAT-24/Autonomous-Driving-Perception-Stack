@@ -1,0 +1,54 @@
+# ============================================================
+# Autonomous Driving Perception Stack — Pinned Requirements
+# ============================================================
+# Install: pip install -r requirements.txt
+# ============================================================
+
+# Core ML
+torch>=2.1.0,<2.5.0
+torchvision>=0.16.0,<0.20.0
+ultralytics>=8.1.0,<8.4.0
+
+# Depth Estimation
+timm>=0.9.0,<1.1.0           # required by MiDaS
+
+# Computer Vision
+opencv-python-headless>=4.8.0,<4.11.0
+opencv-contrib-python-headless>=4.8.0,<4.11.0
+
+# Tracking
+lap>=0.4.0,<0.6.0            # linear assignment for ByteTrack
+filterpy>=1.4.5,<1.5.0       # Kalman filter for DeepSORT
+
+# Optimization
+onnx>=1.15.0,<1.18.0
+onnxruntime-gpu>=1.17.0,<1.21.0
+
+# Experiment Tracking
+wandb>=0.16.0,<0.20.0
+
+# Data Processing
+numpy>=1.24.0,<2.1.0
+pandas>=2.0.0,<2.3.0
+scipy>=1.11.0,<1.15.0
+Pillow>=10.0.0,<11.1.0
+matplotlib>=3.7.0,<3.10.0
+seaborn>=0.13.0,<0.14.0
+
+# Config & Logging
+PyYAML>=6.0,<6.1
+python-json-logger>=2.0.0,<3.0.0
+
+# Testing
+pytest>=7.4.0,<8.4.0
+pytest-cov>=4.1.0,<5.1.0
+
+# Utilities
+tqdm>=4.66.0,<4.68.0
+click>=8.1.0,<8.3.0
+
+# CARLA (install separately — see HUMAN_TODO.md)
+# carla==0.9.15
+
+# TensorRT (install via NVIDIA — see HUMAN_TODO.md)
+# tensorrt>=8.6.0

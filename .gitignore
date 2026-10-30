@@ -1,0 +1,67 @@
+# ============================================================
+# Autonomous Driving Perception Stack — .gitignore
+# ============================================================
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.whl
+.venv/
+venv/
+env/
+
+# ---- Data (large, download separately) ----
+data/raw/
+data/processed/
+data/bdd100k/
+data/kitti/
+*.zip
+*.tar.gz
+*.tar
+
+# ---- Model weights & engines ----
+*.pt
+*.pth
+*.onnx
+*.engine
+*.trt
+*.plan
+weights/
+runs/
+wandb/
+
+# ---- Videos & large media ----
+*.mp4
+*.avi
+*.mkv
+*.webm
+*.rosbag
+*.db3
+
+# ---- ROS2 build artifacts ----
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# ---- IDE & OS ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+.DS_Store
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+
+# ---- Misc ----
+*.log
+*.bak
+.env

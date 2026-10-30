@@ -1,0 +1,51 @@
+# ============================================================
+# Depth Estimation Configuration — MiDaS
+# ============================================================
+
+model:
+  name: "MiDaS_small"         # Options: DPT_Large, DPT_Hybrid, MiDaS_small
+  source: "intel-isl/MiDaS"   # torch.hub source
+  device: "cuda"              # "cuda" or "cpu"
+
+# Calibration: relative depth → metric distance
+# Method 1: Known object sizes (for real images)
+# Method 2: CARLA ground-truth depth (for simulator)
+calibration:
+  method: "carla_gt"           # "known_objects" or "carla_gt"
+  
+  # Known object reference sizes (meters) — used when method = "known_objects"
+  reference_objects:
+    car_width: 1.8
+    car_height: 1.5
+    pedestrian_height: 1.7
+    truck_width: 2.5
+  
+  # CARLA calibration params — used when method = "carla_gt"
+  carla:
+    depth_sensor_range: 1000.0  # Max depth sensor range in meters
+    # Linear fit params (will be computed during calibration)
+    scale: null
+    shift: null
+
+# Distance extraction
+distance:
+  # How to extract depth value for a bounding box
+  aggregation: "median"        # "median", "mean", "min", "percentile_25"
+  bbox_padding: -5             # Shrink bbox by N pixels to avoid edge artifacts
+  
+  # Distance bands for error analysis
+  bands:
+    - [0, 10]
+    - [10, 30]
+    - [30, 50]
+    - [50, 100]
+
+# Time-to-Collision (TTC)
+ttc:
+  smoothing_window: 5          # Frames to smooth distance over
+  warning_threshold: 3.0       # TTC < 3s triggers warning
+  critical_threshold: 1.5      # TTC < 1.5s triggers critical alert
+  min_speed_mps: 0.5           # Ignore TTC if approach speed < 0.5 m/s
+
+# Output
+output_dir: "docs/results/depth"

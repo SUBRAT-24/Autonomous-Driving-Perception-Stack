@@ -1,0 +1,54 @@
+# ============================================================
+# YOLO Training Configuration
+# ============================================================
+
+model:
+  name: "yolov8m"              # Options: yolov8n, yolov8s, yolov8m, yolov8l, yolov8x
+  pretrained: "yolov8m.pt"     # COCO-pretrained starting weights
+
+training:
+  epochs: 50
+  batch_size: 16               # Adjust based on GPU VRAM (8=4GB, 16=8GB, 32=16GB+)
+  imgsz: 640                   # Input image size (square)
+  optimizer: "AdamW"
+  lr0: 0.001                   # Initial learning rate
+  lrf: 0.01                    # Final learning rate (lr0 * lrf)
+  warmup_epochs: 3
+  weight_decay: 0.0005
+  momentum: 0.937
+  
+  # Augmentation
+  augment: true
+  hsv_h: 0.015                # Hue augmentation
+  hsv_s: 0.7                  # Saturation augmentation
+  hsv_v: 0.4                  # Value augmentation
+  degrees: 0.0                # Rotation (degrees)
+  translate: 0.1              # Translation fraction
+  scale: 0.5                  # Scale augmentation
+  flipud: 0.0                 # Vertical flip probability
+  fliplr: 0.5                 # Horizontal flip probability
+  mosaic: 1.0                 # Mosaic augmentation probability
+  mixup: 0.0                  # MixUp augmentation probability
+
+  # Device
+  device: "0"                 # GPU index; use "cpu" if no GPU
+  workers: 8                  # DataLoader workers
+  seed: 42                    # Reproducibility
+
+  # Saving
+  project: "runs/detect"
+  name: "bdd100k_yolov8m"
+  save_period: 10             # Save checkpoint every N epochs
+  patience: 10                # Early stopping patience
+
+# Validation
+validation:
+  conf_threshold: 0.25
+  iou_threshold: 0.7
+  split: "val"
+
+# W&B Logging
+wandb:
+  project: "perception-stack"
+  entity: null                # Set to your W&B username
+  tags: ["yolov8m", "bdd100k", "detection"]
