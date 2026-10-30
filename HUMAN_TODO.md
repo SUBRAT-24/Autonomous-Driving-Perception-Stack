@@ -21,9 +21,26 @@
 ### DATA-01: Download BDD100K dataset
 - [ ] Go to https://bdd-data.berkeley.edu/
 - [ ] Register / log in
-- [ ] Download "100K Images" (or the 10K subset if available)
-- [ ] Download "Detection 2020 Labels" (JSON format)
-- [ ] Place in `data/raw/bdd100k/images/` and `data/raw/bdd100k/labels/`
+- [ ] Download:
+  - **10K Images** (or 100K Images): `10k_images_train.zip` and `10k_images_val.zip` (or 100K images split)
+  - **Detection 2020 Labels**: `bdd100k_det_20_labels_trainval.zip`
+- [ ] Unpack the files so the structure matches exactly:
+  ```text
+  data/raw/bdd100k/
+  ├── images/
+  │   └── 100k/
+  │       ├── train/    # ~7,000 .jpg images (e.g. 0000f77c-62c2a249.jpg)
+  │       └── val/      # ~1,000 .jpg images
+  └── labels/
+      └── det_20/
+          ├── det_train.json
+          └── det_val.json
+  ```
+- [ ] Verify the placement by running:
+  ```bash
+  python scripts/verify_data.py
+  ```
+  (Must report `All checks PASSED — dataset is ready.` with exit code 0)
 
 ### WANDB-01: Weights & Biases setup
 - [x] Account created: `subratkumar`

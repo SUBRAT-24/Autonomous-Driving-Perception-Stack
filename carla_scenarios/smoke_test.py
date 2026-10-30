@@ -10,7 +10,6 @@ import argparse
 import os
 import queue
 import sys
-import time
 
 try:
     import carla
@@ -24,9 +23,17 @@ def parse_args():
     parser = argparse.ArgumentParser(description="CARLA Perception Smoke Test")
     parser.add_argument("--host", default="127.0.0.1", help="CARLA host IP")
     parser.add_argument("--port", type=int, default=2000, help="CARLA RPC port")
-    parser.add_argument("--timeout", type=float, default=10.0, help="Connection timeout in seconds")
-    parser.add_argument("--num-frames", type=int, default=10, help="Number of frames to save")
-    parser.add_argument("--output-dir", default="data/sample/smoke_test", help="Directory to save images")
+    parser.add_argument(
+        "--timeout", type=float, default=10.0, help="Connection timeout in seconds"
+    )
+    parser.add_argument(
+        "--num-frames", type=int, default=10, help="Number of frames to save"
+    )
+    parser.add_argument(
+        "--output-dir",
+        default="data/sample/smoke_test",
+        help="Directory to save images",
+    )
     return parser.parse_args()
 
 
@@ -42,7 +49,9 @@ def main():
         world = client.get_world()
     except Exception as e:
         print(f"[ERROR] Could not connect to CARLA at {args.host}:{args.port}: {e}")
-        print("Please ensure CARLA Simulator is running (e.g. CarlaUE4.exe or ./CarlaUE4.sh).")
+        print(
+            "Please ensure CARLA Simulator is running (e.g. CarlaUE4.exe or ./CarlaUE4.sh)."
+        )
         sys.exit(1)
 
     print(f"Connected to CARLA! Map: {world.get_map().name}")

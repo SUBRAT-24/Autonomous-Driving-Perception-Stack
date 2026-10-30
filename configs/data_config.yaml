@@ -18,20 +18,32 @@ dataset:
   val_labels: "data/processed/bdd100k/labels/val"
 
 # BDD100K detection classes → YOLO class IDs
-# We focus on the driving-relevant classes
-classes:
-  - "pedestrian"        # 0
-  - "rider"             # 1
-  - "car"               # 2
-  - "truck"             # 3
-  - "bus"               # 4
-  - "train"             # 5
-  - "motorcycle"        # 6
-  - "bicycle"           # 7
-  - "traffic light"     # 8
-  - "traffic sign"      # 9
+# We focus on the 9 driving-relevant classes (skip "train")
+# Mapping: BDD100K category → YOLO class ID
+class_mapping:
+  car: 0
+  truck: 1
+  bus: 2
+  pedestrian: 3           # BDD "pedestrian" → YOLO "person"
+  rider: 4
+  bicycle: 5              # BDD "bicycle" → YOLO "bike"
+  motorcycle: 6
+  "traffic light": 7
+  "traffic sign": 8
 
-num_classes: 10
+# YOLO class names (ordered by class ID)
+classes:
+  - "car"               # 0
+  - "truck"             # 1
+  - "bus"               # 2
+  - "person"            # 3
+  - "rider"             # 4
+  - "bike"              # 5
+  - "motorcycle"        # 6
+  - "traffic light"     # 7
+  - "traffic sign"      # 8
+
+num_classes: 9
 
 # Image properties
 image:

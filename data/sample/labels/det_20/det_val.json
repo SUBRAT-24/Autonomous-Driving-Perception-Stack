@@ -1,0 +1,103 @@
+[
+  {
+    "name": "sample_0011_val.jpg",
+    "attributes": {
+      "weather": "clear",
+      "scene": "city street",
+      "timeofday": "daytime"
+    },
+    "labels": [
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 250.0,
+          "y1": 420.0,
+          "x2": 450.0,
+          "y2": 530.0
+        }
+      },
+      {
+        "category": "truck",
+        "box2d": {
+          "x1": 520.0,
+          "y1": 360.0,
+          "x2": 760.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "pedestrian",
+        "box2d": {
+          "x1": 120.0,
+          "y1": 410.0,
+          "x2": 160.0,
+          "y2": 530.0
+        }
+      },
+      {
+        "category": "traffic sign",
+        "box2d": {
+          "x1": 880.0,
+          "y1": 280.0,
+          "x2": 930.0,
+          "y2": 410.0
+        }
+      },
+      {
+        "category": "traffic light",
+        "box2d": {
+          "x1": 650.0,
+          "y1": 170.0,
+          "x2": 680.0,
+          "y2": 260.0
+        }
+      }
+    ]
+  },
+  {
+    "name": "sample_0012_val.jpg",
+    "attributes": {
+      "weather": "rainy",
+      "scene": "city street",
+      "timeofday": "night"
+    },
+    "labels": [
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 420.0,
+          "y1": 430.0,
+          "x2": 620.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "rider",
+        "box2d": {
+          "x1": 200.0,
+          "y1": 400.0,
+          "x2": 250.0,
+          "y2": 520.0
+        }
+      },
+      {
+        "category": "motorcycle",
+        "box2d": {
+          "x1": 190.0,
+          "y1": 430.0,
+          "x2": 270.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "traffic light",
+        "box2d": {
+          "x1": 720.0,
+          "y1": 190.0,
+          "x2": 750.0,
+          "y2": 280.0
+        }
+      }
+    ]
+  }
+]

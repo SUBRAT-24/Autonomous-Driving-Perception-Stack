@@ -1,0 +1,426 @@
+[
+  {
+    "name": "sample_0001_train.jpg",
+    "attributes": {
+      "weather": "clear",
+      "scene": "highway",
+      "timeofday": "daytime"
+    },
+    "labels": [
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 200.0,
+          "y1": 420.0,
+          "x2": 360.0,
+          "y2": 520.0
+        }
+      },
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 500.0,
+          "y1": 400.0,
+          "x2": 680.0,
+          "y2": 530.0
+        }
+      },
+      {
+        "category": "truck",
+        "box2d": {
+          "x1": 800.0,
+          "y1": 360.0,
+          "x2": 1050.0,
+          "y2": 560.0
+        }
+      },
+      {
+        "category": "traffic sign",
+        "box2d": {
+          "x1": 1100.0,
+          "y1": 280.0,
+          "x2": 1150.0,
+          "y2": 420.0
+        }
+      }
+    ]
+  },
+  {
+    "name": "sample_0002_train.jpg",
+    "attributes": {
+      "weather": "clear",
+      "scene": "city street",
+      "timeofday": "night"
+    },
+    "labels": [
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 450.0,
+          "y1": 430.0,
+          "x2": 650.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "pedestrian",
+        "box2d": {
+          "x1": 150.0,
+          "y1": 410.0,
+          "x2": 190.0,
+          "y2": 530.0
+        }
+      },
+      {
+        "category": "traffic light",
+        "box2d": {
+          "x1": 600.0,
+          "y1": 180.0,
+          "x2": 630.0,
+          "y2": 270.0
+        }
+      },
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 720.0,
+          "y1": 440.0,
+          "x2": 890.0,
+          "y2": 550.0
+        }
+      }
+    ]
+  },
+  {
+    "name": "sample_0003_train.jpg",
+    "attributes": {
+      "weather": "rainy",
+      "scene": "residential",
+      "timeofday": "daytime"
+    },
+    "labels": [
+      {
+        "category": "bus",
+        "box2d": {
+          "x1": 180.0,
+          "y1": 330.0,
+          "x2": 460.0,
+          "y2": 550.0
+        }
+      },
+      {
+        "category": "rider",
+        "box2d": {
+          "x1": 540.0,
+          "y1": 410.0,
+          "x2": 590.0,
+          "y2": 520.0
+        }
+      },
+      {
+        "category": "bicycle",
+        "box2d": {
+          "x1": 530.0,
+          "y1": 440.0,
+          "x2": 600.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "traffic sign",
+        "box2d": {
+          "x1": 950.0,
+          "y1": 300.0,
+          "x2": 990.0,
+          "y2": 410.0
+        }
+      }
+    ]
+  },
+  {
+    "name": "sample_0004_train.jpg",
+    "attributes": {
+      "weather": "clear",
+      "scene": "highway",
+      "timeofday": "night"
+    },
+    "labels": [
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 300.0,
+          "y1": 440.0,
+          "x2": 480.0,
+          "y2": 550.0
+        }
+      },
+      {
+        "category": "motorcycle",
+        "box2d": {
+          "x1": 580.0,
+          "y1": 430.0,
+          "x2": 660.0,
+          "y2": 530.0
+        }
+      },
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 750.0,
+          "y1": 420.0,
+          "x2": 980.0,
+          "y2": 540.0
+        }
+      }
+    ]
+  },
+  {
+    "name": "sample_0005_train.jpg",
+    "attributes": {
+      "weather": "overcast",
+      "scene": "city street",
+      "timeofday": "daytime"
+    },
+    "labels": [
+      {
+        "category": "pedestrian",
+        "box2d": {
+          "x1": 280.0,
+          "y1": 400.0,
+          "x2": 330.0,
+          "y2": 530.0
+        }
+      },
+      {
+        "category": "pedestrian",
+        "box2d": {
+          "x1": 350.0,
+          "y1": 410.0,
+          "x2": 395.0,
+          "y2": 530.0
+        }
+      },
+      {
+        "category": "traffic light",
+        "box2d": {
+          "x1": 580.0,
+          "y1": 170.0,
+          "x2": 610.0,
+          "y2": 260.0
+        }
+      },
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 680.0,
+          "y1": 430.0,
+          "x2": 870.0,
+          "y2": 540.0
+        }
+      }
+    ]
+  },
+  {
+    "name": "sample_0006_train.jpg",
+    "attributes": {
+      "weather": "rainy",
+      "scene": "city street",
+      "timeofday": "night"
+    },
+    "labels": [
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 400.0,
+          "y1": 440.0,
+          "x2": 600.0,
+          "y2": 550.0
+        }
+      },
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 700.0,
+          "y1": 450.0,
+          "x2": 860.0,
+          "y2": 545.0
+        }
+      },
+      {
+        "category": "traffic sign",
+        "box2d": {
+          "x1": 1020.0,
+          "y1": 320.0,
+          "x2": 1050.0,
+          "y2": 400.0
+        }
+      }
+    ]
+  },
+  {
+    "name": "sample_0007_train.jpg",
+    "attributes": {
+      "weather": "clear",
+      "scene": "highway",
+      "timeofday": "daytime"
+    },
+    "labels": [
+      {
+        "category": "truck",
+        "box2d": {
+          "x1": 120.0,
+          "y1": 340.0,
+          "x2": 380.0,
+          "y2": 550.0
+        }
+      },
+      {
+        "category": "bus",
+        "box2d": {
+          "x1": 450.0,
+          "y1": 330.0,
+          "x2": 720.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 800.0,
+          "y1": 430.0,
+          "x2": 990.0,
+          "y2": 540.0
+        }
+      }
+    ]
+  },
+  {
+    "name": "sample_0008_train.jpg",
+    "attributes": {
+      "weather": "clear",
+      "scene": "residential",
+      "timeofday": "dawn/dusk"
+    },
+    "labels": [
+      {
+        "category": "rider",
+        "box2d": {
+          "x1": 350.0,
+          "y1": 400.0,
+          "x2": 410.0,
+          "y2": 520.0
+        }
+      },
+      {
+        "category": "motorcycle",
+        "box2d": {
+          "x1": 340.0,
+          "y1": 430.0,
+          "x2": 430.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 600.0,
+          "y1": 430.0,
+          "x2": 800.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "traffic sign",
+        "box2d": {
+          "x1": 920.0,
+          "y1": 300.0,
+          "x2": 960.0,
+          "y2": 420.0
+        }
+      }
+    ]
+  },
+  {
+    "name": "sample_0009_train.jpg",
+    "attributes": {
+      "weather": "clear",
+      "scene": "city street",
+      "timeofday": "daytime"
+    },
+    "labels": [
+      {
+        "category": "pedestrian",
+        "box2d": {
+          "x1": 220.0,
+          "y1": 400.0,
+          "x2": 260.0,
+          "y2": 520.0
+        }
+      },
+      {
+        "category": "bicycle",
+        "box2d": {
+          "x1": 300.0,
+          "y1": 440.0,
+          "x2": 360.0,
+          "y2": 530.0
+        }
+      },
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 500.0,
+          "y1": 420.0,
+          "x2": 720.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "traffic light",
+        "box2d": {
+          "x1": 850.0,
+          "y1": 180.0,
+          "x2": 880.0,
+          "y2": 270.0
+        }
+      }
+    ]
+  },
+  {
+    "name": "sample_0010_train.jpg",
+    "attributes": {
+      "weather": "rainy",
+      "scene": "highway",
+      "timeofday": "daytime"
+    },
+    "labels": [
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 380.0,
+          "y1": 430.0,
+          "x2": 580.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "car",
+        "box2d": {
+          "x1": 650.0,
+          "y1": 440.0,
+          "x2": 840.0,
+          "y2": 540.0
+        }
+      },
+      {
+        "category": "traffic light",
+        "box2d": {
+          "x1": 560.0,
+          "y1": 200.0,
+          "x2": 585.0,
+          "y2": 275.0
+        }
+      }
+    ]
+  }
+]

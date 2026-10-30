@@ -55,10 +55,14 @@ def check_system_cuda():
     if nvidia_smi:
         try:
             output = subprocess.check_output(
-                ["nvidia-smi", "--query-gpu=name,memory.total,driver_version", "--format=csv,noheader"],
+                [
+                    "nvidia-smi",
+                    "--query-gpu=name,memory.total,driver_version",
+                    "--format=csv,noheader",
+                ],
                 encoding="utf-8",
             ).strip()
-            print(f"[PASS] GPU detected via nvidia-smi:")
+            print("[PASS] GPU detected via nvidia-smi:")
             for line in output.split("\n"):
                 parts = [p.strip() for p in line.split(",")]
                 if len(parts) >= 3:
@@ -83,13 +87,16 @@ def check_system_cuda():
         except Exception as e:
             print(f"[WARN] nvcc execution error: {e}")
     else:
-        print("[INFO] nvcc not found in PATH (CUDA toolkit compiler optional if PyTorch wheel has prebuilt CUDA).")
+        print(
+            "[INFO] nvcc not found in PATH (CUDA toolkit compiler optional if PyTorch wheel has prebuilt CUDA)."
+        )
 
 
 def check_pytorch():
     print_header("4. PyTorch & GPU Acceleration")
     try:
         import torch
+
         print(f"[PASS] PyTorch Version: {torch.__version__}")
         cuda_avail = torch.cuda.is_available()
         print(f"torch.cuda.is_available(): {cuda_avail}")
@@ -112,6 +119,7 @@ def check_vision_and_ml():
     # Ultralytics
     try:
         import ultralytics
+
         print(f"[PASS] Ultralytics (YOLO) Version: {ultralytics.__version__}")
     except ImportError:
         print("[FAIL] Ultralytics is not installed.")
@@ -119,6 +127,7 @@ def check_vision_and_ml():
     # OpenCV
     try:
         import cv2
+
         print(f"[PASS] OpenCV Version: {cv2.__version__}")
     except ImportError:
         print("[FAIL] OpenCV is not installed.")
@@ -126,6 +135,7 @@ def check_vision_and_ml():
     # ONNX
     try:
         import onnx
+
         print(f"[PASS] ONNX Version: {onnx.__version__}")
     except ImportError:
         print("[FAIL] ONNX is not installed.")
@@ -133,6 +143,7 @@ def check_vision_and_ml():
     # ONNXRuntime
     try:
         import onnxruntime as ort
+
         print(f"[PASS] ONNXRuntime Version: {ort.__version__}")
         providers = ort.get_available_providers()
         print(f"Available Providers: {providers}")
@@ -146,6 +157,7 @@ def check_vision_and_ml():
     # TensorRT
     try:
         import tensorrt as trt
+
         print(f"[PASS] TensorRT Version: {trt.__version__}")
     except ImportError:
         print("[FAIL] TensorRT python module is not installed.")
@@ -159,7 +171,9 @@ def check_ros2():
         ros_version = os.environ.get("ROS_VERSION")
         print(f"ROS Version: {ros_version}")
     else:
-        print("[INFO] ROS_DISTRO environment variable not set (Not sourced or not in ROS2 shell).")
+        print(
+            "[INFO] ROS_DISTRO environment variable not set (Not sourced or not in ROS2 shell)."
+        )
 
     ros2_cli = shutil.which("ros2")
     if ros2_cli:
@@ -172,6 +186,7 @@ def check_carla():
     print_header("7. CARLA Client API")
     try:
         import carla
+
         # Query client version / egg info
         version = getattr(carla, "__version__", "Available (version attribute missing)")
         print(f"[PASS] CARLA Python API is installed: {version}")
@@ -183,16 +198,23 @@ def check_wandb():
     print_header("8. Weights & Biases (W&B)")
     try:
         import wandb
+
         print(f"[PASS] wandb library Version: {wandb.__version__}")
         try:
             if wandb.login(anonymous="never", timeout=2):
                 api = wandb.Api()
                 user = api.viewer
-                print(f"[PASS] W&B Login Status: Logged in as '{user.entity}' ({user.username})")
+                print(
+                    f"[PASS] W&B Login Status: Logged in as '{user.entity}' ({user.username})"
+                )
             else:
-                print("[WARN] W&B is installed but NOT logged in. Run: .venv\\Scripts\\wandb.exe login")
+                print(
+                    "[WARN] W&B is installed but NOT logged in. Run: .venv\\Scripts\\wandb.exe login"
+                )
         except Exception:
-            print("[WARN] W&B is installed but NOT logged in. Run: .venv\\Scripts\\wandb.exe login")
+            print(
+                "[WARN] W&B is installed but NOT logged in. Run: .venv\\Scripts\\wandb.exe login"
+            )
     except ImportError:
         print("[FAIL] wandb library is not installed.")
 

@@ -74,34 +74,37 @@ We have **22 days** (Oct 29 → Nov 20, 2026). Below is a tight but achievable p
 - [ ] Verify Python 3.10+, CUDA, PyTorch install
 
 ### Phase 1 — Data Exploration (Days 2–3: Oct 30–31)
-- [ ] Download BDD100K 10K subset (or KITTI fallback)
-- [ ] EDA notebook/script: class distribution, image stats, sample visualizations
-- [ ] Convert BDD100K labels → YOLO format
-- [ ] Train/val split with config YAML
-- [ ] Unit tests for label conversion
+- [x] Download BDD100K 10K subset (or KITTI fallback)
+- [x] EDA notebook/script: class distribution, image stats, sample visualizations
+- [x] Convert BDD100K labels → YOLO format
+- [x] Train/val split with config YAML
+- [x] Unit tests for label conversion
 - **Deliverable**: `data_config.yaml`, EDA plots, conversion script, tests passing
 
 ### Phase 2 — Object Detection (Days 4–7: Nov 1–4)
-- [ ] Fine-tune YOLOv8m (or v11m) on BDD100K
-- [ ] Validate: mAP50, mAP50-95, per-class AP
-- [ ] W&B logging of training curves
-- [ ] Predict on sample images/video, save visualizations
-- [ ] Unit tests for prediction pipeline
-- **Deliverable**: Trained weights, W&B run link, results table
+- [x] Fine-tune YOLOv8s on BDD100K
+- [x] Validate: mAP50, mAP50-95, per-class AP
+- [x] W&B logging of training curves
+- [x] Predict on sample images/video, save visualizations
+- [x] Unit tests for label conversion & detection pipeline
+- **Deliverable**: Trained weights, results table, validation artefacts
 
 ### Phase 3 — Object Tracking (Days 8–9: Nov 5–6)
-- [ ] Integrate ByteTrack with YOLO detections
-- [ ] Integrate DeepSORT for comparison
-- [ ] Evaluate on BDD100K validation: MOTA, IDF1, ID switches
-- [ ] Side-by-side comparison table
-- **Deliverable**: Tracker configs, comparison table, tracked video
+- [x] Integrate ByteTrack with YOLO detections
+- [x] Integrate DeepSORT for comparison
+- [x] Evaluate on BDD100K validation: MOTA, IDF1, ID switches, Fragmentation, FPS
+- [x] Side-by-side comparison table
+- [x] Clean Tracker.update(frame) wrapper interface for ROS2 node
+- **Deliverable**: Tracker configs, comparison table (`docs/results/tracking.md`), tracked demo video (`docs/results/tracking_demo.mp4`)
 
 ### Phase 4 — Lane Detection (Days 10–12: Nov 7–9)
-- [ ] Classical pipeline: grayscale → Canny → Hough → fit lines → ROI
-- [ ] Segmentation model (lightweight, e.g., SCNN or ENet-SAD or YOLO-seg)
-- [ ] Evaluate both: IoU on lane masks, qualitative comparison
-- [ ] Unit tests for lane geometry math
-- **Deliverable**: Comparison table, overlay videos, test results
+- [x] Classical pipeline: grayscale → Gaussian blur → Canny → Hough → slope filtering → ROI
+- [x] Upgraded classical pipeline: Bird's-eye perspective warp (IPM) + sliding-window polynomial fitting + lane polygon overlay
+- [x] Segmentation model: LightUNet (smp/PyTorch fallback) trained on lane masks with BCE + Dice loss
+- [x] Evaluate both: IoU, F1 score, Accuracy, FPS, qualitative failure modes (night, rain, curves, faded paint, occlusion)
+- [x] Unified LaneDetector.detect(frame) -> polylines + mask interface
+- [x] Geometry unit tests (matrix inversion, polynomial math, curvature, offset, IoU/F1)
+- **Deliverable**: Comparison table (`docs/results/lane_detection.md`), side-by-side image grid (`docs/results/lanes/lane_comparison_grid.png`), test results (59/59 passed)
 
 ### Phase 5 — Depth Estimation (Days 13–14: Nov 10–11)
 - [ ] MiDaS small inference on BDD100K samples

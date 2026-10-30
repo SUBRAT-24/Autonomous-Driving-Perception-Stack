@@ -33,3 +33,16 @@ deepsort:
 evaluation:
   gt_format: "mot"            # Ground truth format (MOT Challenge)
   metrics: ["MOTA", "IDF1", "HOTA", "ID_switches", "FP", "FN"]
+
+# Evaluation clips
+clips:
+  - name: "Highway Day"
+    video_path: "data/sample/clips/clip1_highway_day.mp4"
+    gt_path: "data/sample/clips/clip1_highway_day_gt.txt"
+  - name: "City Crossing"
+    video_path: "data/sample/clips/clip2_city_crossing.mp4"
+    gt_path: "data/sample/clips/clip2_city_crossing_gt.txt"
+  - name: "Night Rain"
+    video_path: "data/sample/clips/clip3_night_rain.mp4"
+    gt_path: "data/sample/clips/clip3_night_rain_gt.txt"
+

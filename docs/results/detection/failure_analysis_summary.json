@@ -1,0 +1,15 @@
+{
+  "night": {
+    "subset": "night",
+    "num_images": 1,
+    "total_predictions": 1,
+    "low_conf_predictions": 1
+  },
+  "rain": {
+    "subset": "rain",
+    "num_images": 1,
+    "total_predictions": 1,
+    "low_conf_predictions": 1
+  },
+  "small_objects": null
+}

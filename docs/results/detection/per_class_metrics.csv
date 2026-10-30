@@ -1,0 +1,10 @@
+class,AP50,AP50-95,precision,recall
+car,0.0,0.0,0.0,0.0
+truck,0.0,0.0,0.0,0.0
+bus,0.0,0.0,0.0,0.0
+person,0.0,0.0,0.0,0.0
+rider,0.0,0.0,0.0,0.0
+bike,0.75,0.45,1.0,0.5
+motorcycle,0.0,0.0,0.0,0.0
+traffic light,0.0,0.0,0.0,0.0
+traffic sign,0.0,0.0,0.0,0.0

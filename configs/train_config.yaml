@@ -33,12 +33,12 @@ training:
 
   # Device
   device: "0"                 # GPU index; use "cpu" if no GPU
-  workers: 8                  # DataLoader workers
+  workers: 0                  # DataLoader workers (0 on Windows avoids multiprocessing spawn deadlock; 8 on Linux)
   seed: 42                    # Reproducibility
 
   # Saving
   project: "runs/detect"
-  name: "bdd100k_yolov8m"
+  name: "bdd100k_yolov8s"
   save_period: 10             # Save checkpoint every N epochs
   patience: 10                # Early stopping patience
 
@@ -52,4 +52,4 @@ validation:
 wandb:
   project: "perception-stack"
   entity: "subratkumar"                # W&B username
-  tags: ["yolov8m", "bdd100k", "detection"]
+  tags: ["yolov8s", "bdd100k", "detection"]
