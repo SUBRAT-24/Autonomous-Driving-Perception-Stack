@@ -6,7 +6,7 @@
 | OS | Windows 11 + WSL2 (Ubuntu 22.04) | ✅ Confirmed |
 | GPU | NVIDIA RTX 3050 (4 GB VRAM) | ⚠️ Tight — see GPU notes below |
 | CARLA | Not yet installed | Will install in Phase 7 |
-| W&B username | TBD — creating account | See HUMAN_TODO.md |
+| W&B username | subratkumar | ✅ Configured |
 | ROS2 | Humble (will install in WSL2) | |
 
 > **⚠️ GPU Notes (RTX 3050 — 4 GB VRAM)**

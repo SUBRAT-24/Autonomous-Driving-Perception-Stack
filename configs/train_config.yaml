@@ -51,5 +51,5 @@ validation:
 # W&B Logging
 wandb:
   project: "perception-stack"
-  entity: null                # Set to your W&B username
+  entity: "subratkumar"                # W&B username
   tags: ["yolov8m", "bdd100k", "detection"]

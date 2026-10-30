@@ -8,11 +8,10 @@
 ## 🔴 Blocking (do these first)
 
 ### ENV-01: Confirm system details
-Update the assumptions table in PLAN.md with your actual:
-- [ ] OS (Windows 11 native? WSL2? Ubuntu?)
-- [ ] GPU model and VRAM
-- [ ] Whether CARLA is installed
-- [ ] Your W&B username
+- [x] OS: Windows 11 + WSL2 (Ubuntu 22.04)
+- [x] GPU: NVIDIA RTX 3050 (4 GB)
+- [x] CARLA status: Not yet installed
+- [x] W&B username: subratkumar
 
 ### ENV-02: Python & CUDA environment
 - [ ] Ensure Python 3.10+ is installed (`python --version`)
@@ -27,9 +26,8 @@ Update the assumptions table in PLAN.md with your actual:
 - [ ] Place in `data/raw/bdd100k/images/` and `data/raw/bdd100k/labels/`
 
 ### WANDB-01: Weights & Biases setup
-- [ ] Create account at https://wandb.ai if you don't have one
-- [ ] Run `wandb login` and paste your API key
-- [ ] Tell me your W&B username so I can configure the project
+- [x] Account created: `subratkumar`
+- [ ] Run `wandb login` in terminal and paste your API key
 
 ---
 
