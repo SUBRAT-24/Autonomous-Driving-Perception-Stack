@@ -174,19 +174,46 @@ class DepthEstimator:
         weights_path: Optional[str | Path] = None,
         device: str = "cuda" if torch.cuda.is_available() else "cpu",
         input_size: Tuple[int, int] = (256, 256),
+        backend: str = "pytorch",
     ) -> None:
         self.model_name = model_name
         self.device = torch.device(device)
         self.input_size = input_size
+        self.backend = backend.lower()
         self.weights_path = (
             Path(weights_path) if weights_path else Path("weights/midas_small.pth")
         )
+        self.trt_context = None
+
+        # Check for TensorRT engine acceleration
+        if self.backend == "tensorrt" and "cuda" in str(self.device):
+            engine_p = Path("weights/midas_small.engine")
+            if engine_p.exists():
+                try:
+                    import tensorrt as trt
+
+                    trt_logger = trt.Logger(trt.Logger.WARNING)
+                    runtime = trt.Runtime(trt_logger)
+                    with open(engine_p, "rb") as ef:
+                        engine = runtime.deserialize_cuda_engine(ef.read())
+                    self.trt_context = engine.create_execution_context()
+                    logger.info(
+                        "DepthEstimator accelerated via TensorRT FP16 engine (%s)",
+                        engine_p,
+                    )
+                except Exception as exc:
+                    logger.warning(
+                        "TensorRT engine initialization fallback to PyTorch: %s", exc
+                    )
 
         # Initialise model
         self.model = self._load_model()
         self.model.eval()
         logger.info(
-            "DepthEstimator initialized (%s on %s)", self.model_name, self.device
+            "DepthEstimator initialized (%s on %s, backend=%s)",
+            self.model_name,
+            self.device,
+            self.backend,
         )
 
     def _load_model(self) -> nn.Module:
@@ -254,17 +281,27 @@ class DepthEstimator:
             torch.from_numpy(img_norm.transpose(2, 0, 1)).unsqueeze(0).to(self.device)
         )
 
-        # Forward inference
-        with torch.no_grad():
-            if "cuda" in str(self.device):
-                with torch.amp.autocast("cuda"):
+        # Forward inference via TensorRT if available, else PyTorch
+        if self.trt_context is not None:
+            out_tensor = torch.empty(
+                (1, 1, 128, 128), dtype=torch.float32, device="cuda"
+            )
+            self.trt_context.set_tensor_address("image", tensor.data_ptr())
+            self.trt_context.set_tensor_address("depth", out_tensor.data_ptr())
+            self.trt_context.execute_async_v3(torch.cuda.current_stream().cuda_stream)
+            torch.cuda.synchronize()
+            pred_2d = out_tensor[0, 0].cpu().numpy()
+        else:
+            with torch.no_grad():
+                if "cuda" in str(self.device):
+                    with torch.amp.autocast("cuda"):
+                        prediction = self.model(tensor)
+                else:
                     prediction = self.model(tensor)
-            else:
-                prediction = self.model(tensor)
-            # Squeeze to 2D
-            if prediction.dim() == 4:
-                prediction = prediction.squeeze(1)
-            pred_2d = prediction[0].float().cpu().numpy()
+                # Squeeze to 2D
+                if prediction.dim() == 4:
+                    prediction = prediction.squeeze(1)
+                pred_2d = prediction[0].float().cpu().numpy()
 
         # Resize back to original frame dimensions
         depth_map = cv2.resize(

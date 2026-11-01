@@ -92,6 +92,7 @@ class Tracker:
         conf_thresh: float = 0.15,
         iou_thresh: float = 0.5,
         device: str = "0",
+        backend: str = "pytorch",
     ) -> None:
         """Initialise detection model and chosen tracker backend.
 
@@ -107,10 +108,19 @@ class Tracker:
         self.conf_thresh = conf_thresh
         self.iou_thresh = iou_thresh
         self.device = device
+        self.backend = backend.lower()
 
-        # Load weights
+        # Load weights based on backend selection
         if weights_path is None:
-            default_weights = Path("runs/detect/bdd100k_yolov8s/weights/best.pt")
+            if self.backend == "tensorrt":
+                default_weights = Path(
+                    "runs/detect/bdd100k_yolov8s/weights/best.engine"
+                )
+            elif self.backend == "onnx":
+                default_weights = Path("runs/detect/bdd100k_yolov8s/weights/best.onnx")
+            else:
+                default_weights = Path("runs/detect/bdd100k_yolov8s/weights/best.pt")
+
             if default_weights.exists():
                 weights_path = default_weights
             else:

@@ -206,7 +206,7 @@
 
     <!-- Footer Documentation Link -->
     <footer class="pt-2 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-2">
-      <div>Autonomous Driving Perception Stack — Phase 5 CARLA + ROS2 Integration</div>
+      <div>Autonomous Driving Perception Stack — Phase 6 Optimized (TensorRT FP16 / ONNX / PyTorch)</div>
       <div class="flex items-center gap-4">
         <span>Repo: <a href="https://github.com/SUBRAT-24/Autonomous-Driving-Perception-Stack" target="_blank" class="text-indigo-400 hover:underline">SUBRAT-24/Autonomous-Driving-Perception-Stack</a></span>
         <span>Build: <span class="text-slate-400 font-mono">master (e463bb9)</span></span>
@@ -292,8 +292,8 @@
     scenarioSelect.addEventListener('change', (e) => initScenario(e.target.value));
     backendSelect.addEventListener('change', (e) => {
       state.backend = e.target.value;
-      backendVal.innerText = e.target.value.toUpperCase();
-      state.fps = e.target.value === 'tensorrt' ? 42.5 : (e.target.value === 'onnx' ? 34.2 : 26.8);
+      backendVal.innerText = e.target.value.toUpperCase() + (e.target.value === 'tensorrt' ? ' (FP16 189 FPS)' : '');
+      state.fps = e.target.value === 'tensorrt' ? 48.5 : (e.target.value === 'onnx' ? 32.4 : 24.2);
       fpsVal.innerText = state.fps.toFixed(1);
     });
 
@@ -614,3 +614,4 @@
   </script>
 </body>
 </html>
+

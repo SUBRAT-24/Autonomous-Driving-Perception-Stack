@@ -46,7 +46,9 @@ from src.depth.calibration import load_calibration_params
 class PerceptionNode(Node):
     """Integrated perception node running detection, tracking, lanes, depth, and reactive braking."""
 
-    def __init__(self, node_name: str = "perception_node") -> None:
+    def __init__(
+        self, node_name: str = "perception_node", backend: Optional[str] = None
+    ) -> None:
         super().__init__(node_name)
 
         # ROS Parameters
@@ -61,7 +63,9 @@ class PerceptionNode(Node):
         self.declare_parameter("brake_distance_m", 8.0)
         self.declare_parameter("corridor_width_m", 1.4)
 
-        self.backend = str(self.get_parameter("model_backend").value or "pytorch")
+        self.backend = (
+            backend or str(self.get_parameter("model_backend").value or "pytorch")
+        ).lower()
         self.device = str(self.get_parameter("device").value or "cuda")
         self.conf_thresh = float(self.get_parameter("conf_threshold").value or 0.15)
         self.lane_method = str(self.get_parameter("lane_method").value or "classical")
@@ -75,12 +79,13 @@ class PerceptionNode(Node):
 
         self.bridge = CvBridge()
 
-        # 1. Initialize Tracker (ByteTrack wrapper)
+        # 1. Initialize Tracker (ByteTrack wrapper with configurable backend)
         tracker_type = "bytetrack"
         dev_str = "0" if "cuda" in self.device else "cpu"
         self.tracker = Tracker(
             tracker_type=tracker_type,
             conf_thresh=self.conf_thresh,
+            backend=self.backend,
             device=dev_str,
         )
 
@@ -92,8 +97,11 @@ class PerceptionNode(Node):
         self._cached_lane_res = None
         self._cached_depth = None
 
-        # 3. Initialize Depth Estimator & Calibration
-        self.depth_estimator = DepthEstimator(device=self.device)
+        # 3. Initialize Depth Estimator & Calibration (with TensorRT acceleration)
+        self.depth_estimator = DepthEstimator(
+            device=self.device,
+            backend=self.backend,
+        )
         try:
             params = load_calibration_params()
             self.calib_scale = float(params.get("scale_a", 0.142228))
@@ -146,7 +154,7 @@ class PerceptionNode(Node):
         if self._cached_lane_res is None or (self.frame_idx % 2 == 1):
             self._cached_lane_res = self.lane_detector.detect(frame)
         lane_res = self._cached_lane_res
-        _ = lane_res._
+        _ = lane_res.polylines
         lane_mask = lane_res.mask
 
         # 5. Object Distance, TTC, and Corridor Tracking

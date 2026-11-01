@@ -6,8 +6,16 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if ROOT not in sys.path:
-    sys.path.insert(0, ROOT)
+for sub in [
+    "",
+    "ros2_ws/src/carla_camera_publisher",
+    "ros2_ws/src/perception_node",
+    "ros2_ws/src/viz_node",
+    "ros2_ws/src/perception_msgs",
+]:
+    p = os.path.join(ROOT, sub) if sub else ROOT
+    if p not in sys.path:
+        sys.path.insert(0, p)
 """
 Unified Autonomous Driving Perception Stack Runner.
 Launches the full pipeline across scenarios with live telemetry,
@@ -53,7 +61,7 @@ def run_pipeline(
     if hasattr(pub_node, "timer") and pub_node.timer is not None:
         pub_node.timer.cancel()
 
-    perc_node = PerceptionNode()
+    perc_node = PerceptionNode(backend=backend)
     perc_node.set_parameters(
         {
             "model_backend": backend,
