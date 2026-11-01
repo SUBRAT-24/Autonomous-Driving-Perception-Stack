@@ -94,3 +94,4 @@ The test suite in [`tests/test_rosbag_replay.py`](file:///d:/Autonomous-Driving-
 8. `test_message_bus_replay`: **PASSED** (validates end-to-end replay into downstream ROS2 subscriber callbacks)
 
 **Total Test Suite Results**: **77 / 77 passing** across all perception modules.
+

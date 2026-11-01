@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autonomous Driving Perception Stack — Live Mission Control</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes pulse-red {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    .alert-pulse {
+      animation: pulse-red 0.7s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased p-4 md:p-6">
+  <div class="max-w-7xl mx-auto space-y-5">
+    
+    <!-- Top Header -->
+    <header class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-800 pb-4 gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            ● SYSTEM ACTIVE
+          </span>
+          <span class="text-xs text-slate-400 font-mono">CARLA 0.9.15 + ROS2 HUMBLE</span>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-white mt-1">Autonomous Perception Stack HUD</h1>
+        <p class="text-sm text-slate-400">Multi-Task 3D Object Detection, ByteTrack, Monocular Depth, Lane Warping & Reactive AEB</p>
+      </div>
+
+      <!-- Quick Metrics Pills -->
+      <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+        <div class="bg-slate-900 border border-slate-800 px-3 py-2 rounded-lg">
+          <span class="text-slate-400">FPS:</span>
+          <span id="fps-val" class="font-bold text-emerald-400 text-sm ml-1">26.8</span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 px-3 py-2 rounded-lg">
+          <span class="text-slate-400">SPEED:</span>
+          <span id="speed-val" class="font-bold text-sky-400 text-sm ml-1">30.6 km/h</span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 px-3 py-2 rounded-lg">
+          <span class="text-slate-400">BRAKE:</span>
+          <span id="brake-val" class="font-bold text-slate-200 text-sm ml-1">0.0%</span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 px-3 py-2 rounded-lg">
+          <span class="text-slate-400">BACKEND:</span>
+          <span id="backend-val" class="font-bold text-indigo-400 text-sm ml-1">CUDA FP16</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Controls & Scenario Selector -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-slate-900/80 border border-slate-800 p-3.5 rounded-xl">
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Scenario Selection</label>
+        <select id="scenario-select" class="w-full bg-slate-950 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 font-medium">
+          <option value="pedestrian">Pedestrian Crossing (Ego Lane Incursion)</option>
+          <option value="lead_car">Lead Vehicle Hard Braking (-6.5 m/s²)</option>
+          <option value="night">Night Driving (Headlight Cone)</option>
+          <option value="rain">Heavy Rain & Road Reflections</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Model Inference Backend</label>
+        <select id="backend-select" class="w-full bg-slate-950 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 font-medium">
+          <option value="pytorch">PyTorch (CUDA AMP)</option>
+          <option value="onnx">ONNX Runtime (CUDA Provider)</option>
+          <option value="tensorrt">TensorRT FP16 Engine</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Playback & Simulation Control</label>
+        <div class="flex items-center gap-2">
+          <button id="btn-play" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 px-3 rounded-lg text-sm transition">
+            ❚❚ Pause
+          </button>
+          <button id="btn-reset" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-2 px-3 rounded-lg text-sm transition">
+            ↺ Reset
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Ego Cruise Speed: <span id="target-speed-label" class="text-sky-400 font-mono">30 km/h</span></label>
+        <input id="speed-slider" type="range" min="15" max="60" value="30" class="w-full accent-indigo-500 mt-2">
+      </div>
+    </div>
+
+    <!-- Main Viewport Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      
+      <!-- Primary Camera Viewport (2 Columns) -->
+      <div class="lg:col-span-2 space-y-3">
+        <div class="relative bg-black rounded-xl overflow-hidden border border-slate-800 aspect-[16/9] shadow-2xl">
+          <!-- Main Canvas -->
+          <canvas id="view-canvas" width="1280" height="720" class="w-full h-full object-contain"></canvas>
+
+          <!-- Emergency Braking Banner Overlay -->
+          <div id="brake-banner" class="hidden absolute top-4 left-1/2 -translate-x-1/2 bg-red-600/95 text-white px-6 py-2.5 rounded-lg shadow-xl border border-red-400 alert-pulse text-center">
+            <div class="text-sm font-extrabold tracking-wider uppercase flex items-center justify-center gap-2">
+              <span class="text-lg">⚠️</span> EMERGENCY BRAKE ENGAGED
+            </div>
+            <div id="brake-subtext" class="text-xs text-red-100 font-mono mt-0.5">TTC: 1.4s | Distance: 5.8m | AEB Active</div>
+          </div>
+
+          <!-- Bottom Telemetry HUD Ribbon -->
+          <div class="absolute bottom-3 left-3 right-3 bg-slate-950/85 backdrop-blur border border-slate-800/80 rounded-lg p-2.5 flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center gap-3">
+              <span class="text-slate-400">FRAME: <span id="frame-num" class="text-slate-200 font-bold">0042</span></span>
+              <span class="text-slate-400">THROTTLE: <span id="throttle-val" class="text-emerald-400 font-bold">25%</span></span>
+              <span class="text-slate-400">LATERAL: <span id="lat-offset" class="text-sky-400 font-bold">0.02m</span></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span class="text-emerald-400 font-semibold">AEB CORRIDOR SAFE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Channel Tabs -->
+        <div class="grid grid-cols-4 gap-2 text-xs">
+          <button class="bg-slate-900 border border-indigo-500 text-indigo-300 font-semibold py-2 px-3 rounded-lg text-center">
+            Fused RGB + HUD
+          </button>
+          <button class="bg-slate-950 hover:bg-slate-900 border border-slate-800 text-slate-400 py-2 px-3 rounded-lg text-center">
+            MiDaS Depth Map
+          </button>
+          <button class="bg-slate-950 hover:bg-slate-900 border border-slate-800 text-slate-400 py-2 px-3 rounded-lg text-center">
+            BEV Lane Warp
+          </button>
+          <button class="bg-slate-950 hover:bg-slate-900 border border-slate-800 text-slate-400 py-2 px-3 rounded-lg text-center">
+            YOLOv8s Heatmap
+          </button>
+        </div>
+      </div>
+
+      <!-- Side Radar & Live Telemetry Column -->
+      <div class="space-y-4">
+        
+        <!-- Bird's-Eye View (BEV) Radar Display -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-sky-400"></span> Bird's-Eye View (BEV) Radar
+            </h3>
+            <span class="text-xs font-mono text-slate-400">Range: 40m</span>
+          </div>
+
+          <div class="relative bg-slate-950 rounded-lg border border-slate-800 aspect-[4/5] overflow-hidden flex items-center justify-center">
+            <canvas id="bev-canvas" width="300" height="375" class="w-full h-full object-contain"></canvas>
+          </div>
+        </div>
+
+        <!-- Detected Obstacles Table -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+          <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">
+            Active Tracked Obstacles (/perception/objects)
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="text-slate-500 border-b border-slate-800">
+                <tr>
+                  <th class="pb-1.5">ID</th>
+                  <th class="pb-1.5">Class</th>
+                  <th class="pb-1.5">Dist</th>
+                  <th class="pb-1.5">TTC</th>
+                  <th class="pb-1.5 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody id="objects-table-body" class="divide-y divide-slate-800/60">
+                <!-- Dynamically populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ROS2 Topic Status -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm text-xs font-mono space-y-2">
+          <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">ROS2 Node Telemetry</h3>
+          <div class="flex justify-between text-slate-400">
+            <span>/camera/image_raw</span>
+            <span class="text-emerald-400">20.0 Hz (1280x720)</span>
+          </div>
+          <div class="flex justify-between text-slate-400">
+            <span>/perception/objects</span>
+            <span class="text-emerald-400">20.0 Hz (TrackedArray)</span>
+          </div>
+          <div class="flex justify-between text-slate-400">
+            <span>/perception/overlay</span>
+            <span class="text-emerald-400">20.0 Hz (HUD Composite)</span>
+          </div>
+          <div class="flex justify-between text-slate-400">
+            <span>/vehicle/control</span>
+            <span id="ctrl-topic-status" class="text-sky-400">Throttle: 0.25</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Footer Documentation Link -->
+    <footer class="pt-2 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+      <div>Autonomous Driving Perception Stack — Phase 5 CARLA + ROS2 Integration</div>
+      <div class="flex items-center gap-4">
+        <span>Repo: <a href="https://github.com/SUBRAT-24/Autonomous-Driving-Perception-Stack" target="_blank" class="text-indigo-400 hover:underline">SUBRAT-24/Autonomous-Driving-Perception-Stack</a></span>
+        <span>Build: <span class="text-slate-400 font-mono">master (e463bb9)</span></span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Simulation & Perception State Engine
+    const state = {
+      scenario: 'pedestrian',
+      backend: 'pytorch',
+      isPlaying: true,
+      frame: 0,
+      fps: 26.8,
+      speedKmh: 30.6,
+      targetSpeedKmh: 30.0,
+      throttle: 0.25,
+      brake: 0.0,
+      isEmergencyBraking: false,
+      actors: [],
+      egoY: 0.0,
+    };
+
+    function initScenario(sc) {
+      state.scenario = sc;
+      state.frame = 0;
+      state.speedKmh = state.targetSpeedKmh;
+      state.throttle = 0.25;
+      state.brake = 0.0;
+      state.isEmergencyBraking = false;
+      state.actors = [];
+
+      if (sc === 'pedestrian') {
+        state.actors = [
+          { id: 101, cls: 'person', x: 3.2, z: 28.0, vx: -1.1, vz: 0.0, w: 0.6, h: 1.75 },
+          { id: 102, cls: 'car', x: -3.8, z: 38.0, vx: 0.0, vz: -12.0, w: 1.9, h: 1.5 },
+        ];
+      } else if (sc === 'lead_car') {
+        state.actors = [
+          { id: 202, cls: 'car', x: 0.0, z: 24.0, vx: 0.0, vz: 8.0, w: 1.9, h: 1.5, leadBrakeAt: 1.0 },
+        ];
+      } else if (sc === 'night') {
+        state.actors = [
+          { id: 301, cls: 'person', x: 2.8, z: 26.0, vx: -0.9, vz: 0.0, w: 0.6, h: 1.75 },
+          { id: 302, cls: 'car', x: -3.5, z: 32.0, vx: 0.0, vz: -10.0, w: 1.9, h: 1.5 },
+        ];
+      } else if (sc === 'rain') {
+        state.actors = [
+          { id: 401, cls: 'car', x: 0.0, z: 22.0, vx: 0.0, vz: 7.0, w: 1.9, h: 1.5, leadBrakeAt: 0.8 },
+          { id: 402, cls: 'person', x: -2.6, z: 30.0, vx: 0.5, vz: 0.0, w: 0.6, h: 1.75 },
+        ];
+      }
+    }
+
+    initScenario('pedestrian');
+
+    // Canvas Elements
+    const viewCanvas = document.getElementById('view-canvas');
+    const vCtx = viewCanvas.getContext('2d');
+    const bevCanvas = document.getElementById('bev-canvas');
+    const bCtx = bevCanvas.getContext('2d');
+
+    // UI Elements
+    const fpsVal = document.getElementById('fps-val');
+    const speedVal = document.getElementById('speed-val');
+    const brakeVal = document.getElementById('brake-val');
+    const backendVal = document.getElementById('backend-val');
+    const frameNum = document.getElementById('frame-num');
+    const throttleVal = document.getElementById('throttle-val');
+    const brakeBanner = document.getElementById('brake-banner');
+    const brakeSubtext = document.getElementById('brake-subtext');
+    const objectsTable = document.getElementById('objects-table-body');
+    const ctrlStatus = document.getElementById('ctrl-topic-status');
+    const btnPlay = document.getElementById('btn-play');
+    const btnReset = document.getElementById('btn-reset');
+    const scenarioSelect = document.getElementById('scenario-select');
+    const backendSelect = document.getElementById('backend-select');
+    const speedSlider = document.getElementById('speed-slider');
+    const targetSpeedLabel = document.getElementById('target-speed-label');
+
+    scenarioSelect.addEventListener('change', (e) => initScenario(e.target.value));
+    backendSelect.addEventListener('change', (e) => {
+      state.backend = e.target.value;
+      backendVal.innerText = e.target.value.toUpperCase();
+      state.fps = e.target.value === 'tensorrt' ? 42.5 : (e.target.value === 'onnx' ? 34.2 : 26.8);
+      fpsVal.innerText = state.fps.toFixed(1);
+    });
+
+    speedSlider.addEventListener('input', (e) => {
+      state.targetSpeedKmh = parseFloat(e.target.value);
+      targetSpeedLabel.innerText = `${state.targetSpeedKmh} km/h`;
+    });
+
+    btnPlay.addEventListener('click', () => {
+      state.isPlaying = !state.isPlaying;
+      btnPlay.innerText = state.isPlaying ? '❚❚ Pause' : '▶ Play';
+    });
+
+    btnReset.addEventListener('click', () => initScenario(state.scenario));
+
+    // Simulation Step
+    function updatePhysics(dt) {
+      state.frame++;
+      const t = state.frame * dt;
+
+      // Kinematics update
+      let shouldBrake = false;
+      let minTtc = 999.0;
+      let closestDist = 999.0;
+
+      state.actors.forEach(actor => {
+        // Special logic for lead car braking scenario
+        if (actor.leadBrakeAt && t >= actor.leadBrakeAt) {
+          actor.vz = Math.max(0.0, actor.vz - 6.5 * dt);
+        }
+
+        // Relative longitudinal speed
+        const egoSpeedMps = state.speedKmh / 3.6;
+        const relVz = egoSpeedMps - actor.vz;
+
+        // Position update
+        actor.x += actor.vx * dt;
+        actor.z -= relVz * dt;
+
+        // TTC calculation
+        const ttc = relVz > 0.1 ? Math.max(0.1, actor.z / relVz) : 999.0;
+        actor.ttc = ttc;
+
+        // Safety Corridor Check (|x| <= 1.4m and z < 35m)
+        if (Math.abs(actor.x) <= 1.4 && actor.z > 0.8 && actor.z < 35.0) {
+          if (ttc < 2.5 || actor.z < 8.0) {
+            shouldBrake = true;
+            if (ttc < minTtc) minTtc = ttc;
+            if (actor.z < closestDist) closestDist = actor.z;
+          }
+        }
+      });
+
+      // Reactive controller
+      if (shouldBrake) {
+        state.isEmergencyBraking = true;
+        state.brake = 1.0;
+        state.throttle = 0.0;
+        state.speedKmh = Math.max(0.0, state.speedKmh - (6.5 * 3.6) * dt);
+      } else {
+        if (state.speedKmh < state.targetSpeedKmh && !state.isEmergencyBraking) {
+          state.throttle = 0.25;
+          state.brake = 0.0;
+          state.speedKmh = Math.min(state.targetSpeedKmh, state.speedKmh + (2.0 * 3.6) * dt);
+        }
+      }
+
+      // UI HUD updates
+      speedVal.innerText = `${state.speedKmh.toFixed(1)} km/h`;
+      brakeVal.innerText = `${(state.brake * 100).toFixed(0)}%`;
+      throttleVal.innerText = `${(state.throttle * 100).toFixed(0)}%`;
+      frameNum.innerText = state.frame.toString().padStart(4, '0');
+
+      if (state.isEmergencyBraking && state.speedKmh > 0.1) {
+        brakeBanner.classList.remove('hidden');
+        brakeSubtext.innerText = `TTC: ${minTtc < 90 ? minTtc.toFixed(1) + 's' : '--'} | Distance: ${closestDist.toFixed(1)}m | Decel: -6.5 m/s²`;
+        ctrlStatus.innerText = 'BRAKE: 1.00 (EMERGENCY)';
+        ctrlStatus.className = 'text-red-400 font-bold';
+      } else {
+        brakeBanner.classList.add('hidden');
+        ctrlStatus.innerText = `Throttle: ${state.throttle.toFixed(2)}`;
+        ctrlStatus.className = 'text-sky-400';
+      }
+    }
+
+    // Render Camera Viewport
+    function renderCameraView() {
+      const w = viewCanvas.width;
+      const h = viewCanvas.height;
+      const horizon = 360;
+
+      // 1. Sky & Road Background
+      const isNight = state.scenario === 'night';
+      const isRain = state.scenario === 'rain';
+
+      // Sky
+      vCtx.fillStyle = isNight ? '#030712' : '#1e293b';
+      vCtx.fillRect(0, 0, w, horizon);
+
+      // Road
+      vCtx.fillStyle = isNight ? '#0b0f19' : (isRain ? '#131b26' : '#1e232d');
+      vCtx.fillRect(0, horizon, w, h - horizon);
+
+      // 2. Ego Lane Corridor (Green Polygon Overlay)
+      vCtx.beginPath();
+      const zFar = 40.0;
+      const zNear = 2.0;
+      const f = 640.0;
+      const cx = 640.0;
+
+      const uLFar = cx + (-1.6 / zFar) * f;
+      const uRFar = cx + (1.6 / zFar) * f;
+      const uLNear = cx + (-1.6 / zNear) * f;
+      const uRNear = cx + (1.6 / zNear) * f;
+
+      const yFar = horizon + (1.6 * f) / zFar;
+      const yNear = horizon + (1.6 * f) / zNear;
+
+      vCtx.moveTo(uLNear, yNear);
+      vCtx.lineTo(uLFar, yFar);
+      vCtx.lineTo(uRFar, yFar);
+      vCtx.lineTo(uRNear, yNear);
+      vCtx.closePath();
+      vCtx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+      vCtx.fill();
+
+      // Lane boundary lines
+      vCtx.strokeStyle = '#34d399';
+      vCtx.lineWidth = 4;
+      vCtx.beginPath();
+      vCtx.moveTo(uLNear, yNear);
+      vCtx.lineTo(uLFar, yFar);
+      vCtx.moveTo(uRNear, yNear);
+      vCtx.lineTo(uRFar, yFar);
+      vCtx.stroke();
+
+      // Center dashed road markings
+      vCtx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+      vCtx.setLineDash([20, 25]);
+      vCtx.lineWidth = 3;
+      vCtx.beginPath();
+      vCtx.moveTo(cx, horizon + 20);
+      vCtx.lineTo(cx, h);
+      vCtx.stroke();
+      vCtx.setLineDash([]);
+
+      // Weather lighting effects
+      if (isNight) {
+        // Headlight cone overlay
+        const grad = vCtx.createRadialGradient(cx, horizon + 80, 10, cx, horizon + 150, 450);
+        grad.addColorStop(0, 'rgba(255, 255, 230, 0.25)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0.75)');
+        vCtx.fillStyle = grad;
+        vCtx.fillRect(0, 0, w, h);
+      } else if (isRain) {
+        // Rain streaks
+        vCtx.strokeStyle = 'rgba(200, 225, 255, 0.35)';
+        vCtx.lineWidth = 1;
+        for (let i = 0; i < 40; i++) {
+          const rx = (i * 37 + state.frame * 23) % w;
+          const ry = (i * 29 + state.frame * 31) % h;
+          vCtx.beginPath();
+          vCtx.moveTo(rx, ry);
+          vCtx.lineTo(rx + 2, ry + 16);
+          vCtx.stroke();
+        }
+      }
+
+      // 3. Render 3D Actors to 2D Perspective
+      state.actors.sort((a, b) => b.z - a.z);
+
+      let tableHtml = '';
+
+      state.actors.forEach(actor => {
+        if (actor.z <= 1.0) return;
+
+        const uCenter = cx + (actor.x / actor.z) * f;
+        const boxH = (actor.h / actor.z) * f;
+        const boxW = (actor.w / actor.z) * f;
+
+        const x1 = uCenter - boxW / 2;
+        const y2 = horizon + (1.6 * f) / actor.z;
+        const y1 = y2 - boxH;
+
+        // Color coding by TTC: Red < 2.5s, Yellow < 4.0s, Green >= 4.0s
+        let boxColor = '#22c55e'; // Green
+        let statusBadge = '<span class="text-emerald-400">SAFE</span>';
+        if (actor.ttc < 2.5) {
+          boxColor = '#ef4444'; // Red
+          statusBadge = '<span class="text-red-400 font-bold animate-pulse">CRITICAL</span>';
+        } else if (actor.ttc < 4.0) {
+          boxColor = '#f59e0b'; // Amber
+          statusBadge = '<span class="text-amber-400">WARNING</span>';
+        }
+
+        // Bounding Box
+        vCtx.strokeStyle = boxColor;
+        vCtx.lineWidth = 3;
+        vCtx.strokeRect(x1, y1, boxW, boxH);
+
+        // Body Silhouette Fill
+        vCtx.fillStyle = actor.cls === 'person' ? 'rgba(56, 189, 248, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+        vCtx.fillRect(x1, y1, boxW, boxH);
+
+        // Label Pill
+        const labelText = `#${actor.id} ${actor.cls} | ${actor.z.toFixed(1)}m | TTC: ${actor.ttc < 90 ? actor.ttc.toFixed(1) + 's' : '--'}`;
+        vCtx.font = 'bold 14px monospace';
+        const tw = vCtx.measureText(labelText).width;
+
+        vCtx.fillStyle = boxColor;
+        vCtx.fillRect(x1, Math.max(0, y1 - 24), tw + 10, 24);
+
+        vCtx.fillStyle = '#000';
+        vCtx.fillText(labelText, x1 + 5, Math.max(16, y1 - 7));
+
+        // Add to side table
+        tableHtml += `
+          <tr class="hover:bg-slate-800/40">
+            <td class="py-1.5 font-bold">#${actor.id}</td>
+            <td class="py-1.5 capitalize text-slate-300">${actor.cls}</td>
+            <td class="py-1.5 text-sky-400 font-bold">${actor.z.toFixed(1)}m</td>
+            <td class="py-1.5 ${actor.ttc < 2.5 ? 'text-red-400 font-bold' : 'text-slate-300'}">${actor.ttc < 90 ? actor.ttc.toFixed(1) + 's' : '--'}</td>
+            <td class="py-1.5 text-right">${statusBadge}</td>
+          </tr>
+        `;
+      });
+
+      objectsTable.innerHTML = tableHtml || '<tr><td colspan="5" class="text-center py-2 text-slate-500">No objects tracked</td></tr>';
+    }
+
+    // Render BEV Radar Display
+    function renderRadarBEV() {
+      const bw = bevCanvas.width;
+      const bh = bevCanvas.height;
+      const cx = bw / 2;
+      const cy = bh - 30;
+
+      // Clear
+      bCtx.fillStyle = '#020617';
+      bCtx.fillRect(0, 0, bw, bh);
+
+      // Radar Concentric Range Rings (10m, 20m, 30m, 40m)
+      const scale = 7.0; // 7 pixels per meter
+      bCtx.lineWidth = 1;
+
+      [10, 20, 30, 40].forEach(rangeM => {
+        const rPx = rangeM * scale;
+        bCtx.strokeStyle = 'rgba(71, 85, 105, 0.4)';
+        bCtx.beginPath();
+        bCtx.arc(cx, cy, rPx, Math.PI, 0, false);
+        bCtx.stroke();
+
+        bCtx.fillStyle = '#64748b';
+        bCtx.font = '10px monospace';
+        bCtx.fillText(`${rangeM}m`, cx + 4, cy - rPx + 12);
+      });
+
+      // Ego Lane Corridor in BEV (-1.4m to +1.4m)
+      const corrW = 1.4 * 2 * scale;
+      bCtx.fillStyle = 'rgba(16, 185, 129, 0.12)';
+      bCtx.fillRect(cx - (1.4 * scale), cy - (40 * scale), corrW, 40 * scale);
+
+      bCtx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+      bCtx.lineWidth = 1.5;
+      bCtx.strokeRect(cx - (1.4 * scale), cy - (40 * scale), corrW, 40 * scale);
+
+      // Ego Vehicle Icon
+      bCtx.fillStyle = '#38bdf8';
+      bCtx.fillRect(cx - 8, cy - 16, 16, 24);
+      bCtx.strokeStyle = '#0284c7';
+      bCtx.strokeRect(cx - 8, cy - 16, 16, 24);
+
+      // Plot Actors on BEV
+      state.actors.forEach(actor => {
+        if (actor.z <= 0 || actor.z > 45) return;
+
+        const ax = cx + (actor.x * scale);
+        const ay = cy - (actor.z * scale);
+
+        bCtx.beginPath();
+        bCtx.arc(ax, ay, actor.cls === 'person' ? 5 : 7, 0, Math.PI * 2);
+        bCtx.fillStyle = actor.ttc < 2.5 ? '#ef4444' : '#22c55e';
+        bCtx.fill();
+        bCtx.strokeStyle = '#fff';
+        bCtx.lineWidth = 1.5;
+        bCtx.stroke();
+
+        // Label
+        bCtx.fillStyle = '#f1f5f9';
+        bCtx.font = 'bold 10px monospace';
+        bCtx.fillText(`#${actor.id}`, ax + 8, ay + 3);
+      });
+    }
+
+    // Main Animation Loop
+    let lastTime = performance.now();
+    let simAccumulator = 0;
+    const simDt = 0.05; // 20 Hz
+
+    function loop(currentTime) {
+      const deltaSec = (currentTime - lastTime) / 1000.0;
+      lastTime = currentTime;
+
+      if (state.isPlaying) {
+        simAccumulator += deltaSec;
+        while (simAccumulator >= simDt) {
+          updatePhysics(simDt);
+          simAccumulator -= simDt;
+        }
+      }
+
+      renderCameraView();
+      renderRadarBEV();
+      requestAnimationFrame(loop);
+    }
+
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
