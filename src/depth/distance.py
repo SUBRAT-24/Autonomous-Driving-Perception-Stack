@@ -273,3 +273,17 @@ def calculate_band_errors(
         }
 
     return results
+
+
+def calculate_object_distance(
+    depth_map: np.ndarray,
+    bbox: Tuple[float, float, float, float],
+    scale_a: float = 0.142228,
+    shift_b: float = 0.004895,
+) -> float:
+    """Extracts median lower-third depth and converts to metric distance in meters."""
+    rel_d = extract_object_depth(depth_map, bbox)
+    return convert_relative_to_metric(rel_d, scale_a, shift_b)
+
+
+TTCTracker = TimeToCollisionTracker

@@ -283,5 +283,62 @@ uff check src/ scripts/ tests/ → All checks passed (0 errors)
 
 ---
 
-_Phases 7–8 will be appended here as we go._
+## Phase 7 — Polish and Deliverables
+- **Status**: 🟢 Complete & Fully Verified
+- **Started**: 2026-11-02
+- **Completed**: 2026-11-02
+
+### Done
+- [x] **Comprehensive Production README**:
+  - Full system overview, features, and technology stack.
+  - Complete Mermaid system architecture diagram.
+  - 1-click environment setup guides (Windows setup.bat, Linux/WSL setup.sh, Docker).
+  - CLI usage reference (
+un_demo.py, pp.py, enchmark.py, pytest).
+  - Comprehensive results tables cross-referencing all 6 phases.
+  - Explicit documentation of real-world edge cases, limitations, and future roadmap.
+- [x] **System Architecture & API Specifications**:
+  - Created docs/architecture.md: Multi-task dataflow, pipeline execution cadence, module topology, and zero-copy CUDA memory execution.
+  - Created docs/api.md: Comprehensive specification of ROS2 topics, message schemas (TrackedObject.msg), parameters, configuration files, and Python library APIs.
+- [x] **Results & Metrics Catalog (docs/results/README.md)**:
+  - Detailed cross-reference matrix linking every evaluation table and plot to its generating script and W&B experiment.
+- [x] **Interactive Gradio Web Demo (pp.py)**:
+  - Built interactive Gradio web application ready for local execution and Hugging Face Spaces deployment.
+  - Video upload, built-in driving clip selector, tracker/lane parameter customization, HUD and BEV radar rendering, and telemetry metrics.
+- [x] **Deployment & Setup Tooling**:
+  - Dockerfile: Multi-stage GPU-accelerated container (CUDA 12.1, PyTorch, Gradio).
+  - setup.bat: 1-click Windows virtualenv and dependency setup script.
+  - setup.sh: 1-click Linux / WSL2 automated setup script.
+- [x] **Presentation & Video Deliverables**:
+  - docs/presentation_slides.md: 10-minute technical slide deck outline covering problem, architecture, engineering challenges, benchmarks, and roadmap.
+  - docs/demo_shot_list.md: Detailed scene-by-scene storyboard and shot list for recorded video demonstrations.
+- [x] **Technical Review & Mastery Guide (docs/system_explanation_and_qa.md)**:
+  - Catalog of 6 core subsystems the engineer must be able to explain in depth.
+  - 9 rigorous reviewer questions with detailed model responses covering ByteTrack association, inverse-depth calibration, sliding-window geometry, AEB corridor safety logic, and TensorRT 11 kernel dispatch.
+- [x] **Verification**:
+  - Executed fresh-clone launch workflow following README commands alone.
+  - All 77 automated unit and integration tests passing (pytest tests/).
+  - Linting clean (
+uff check . with 0 errors).
+
+### Verified Artefacts
+- **README**: README.md
+- **Architecture Spec**: docs/architecture.md
+- **API Spec**: docs/api.md
+- **Results Index**: docs/results/README.md
+- **Presentation Deck**: docs/presentation_slides.md
+- **Demo Shot List**: docs/demo_shot_list.md
+- **Mastery Guide**: docs/system_explanation_and_qa.md
+- **Gradio Application**: pp.py
+- **Containerization**: Dockerfile
+- **Setup Scripts**: setup.bat, setup.sh
+
+### Tests
+- pytest tests/ → 77 passed in 12.41s (100% passing)
+- 
+uff check . → All checks passed (0 errors)
+
+---
+
+_Phase 8 will be appended here as we go._
 
