@@ -65,3 +65,6 @@ Thumbs.db
 *.log
 *.bak
 .env
+
+.coverage
+htmlcov/

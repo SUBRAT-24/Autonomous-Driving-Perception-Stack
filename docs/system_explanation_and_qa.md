@@ -119,3 +119,4 @@ graph TD
   > 4. **Zero-Copy Memory Execution**: In our runtime, PyTorch input tensors are allocated directly on CUDA, and raw GPU pointers (`data_ptr()`) are passed into TensorRT bindings, eliminating host-to-device (H2D) PCIe copy bottlenecks.
   >
   > *TensorRT 11 API Adaptation*: In TensorRT 11, weak-typing flags (`trt.BuilderFlag.FP16`) and `NetworkDefinitionCreationFlag.EXPLICIT_BATCH` were removed. TensorRT 11 requires explicit Strong Typing—exporting ONNX models natively with FP16 weights causes the builder to synthesize native FP16 kernels directly."
+

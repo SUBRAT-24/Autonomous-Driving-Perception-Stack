@@ -94,3 +94,4 @@ Measured on **NVIDIA GeForce RTX 3050 Laptop GPU** (CUDA 12.1, TensorRT 11.4.0):
 | **TensorRT FP16** | **5.28 ms** | **5.16 ms** | **6.01 ms** | **189.2 FPS** | **3.99x (~4.0x)** | **82.3 MB** | **0.192** |
 
 - Full benchmarking report: [benchmarks.md](benchmarks.md).
+

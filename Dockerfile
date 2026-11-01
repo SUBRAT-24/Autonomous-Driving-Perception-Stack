@@ -58,3 +58,4 @@ EXPOSE 7860
 
 # Default entrypoint: launch interactive Gradio web application
 CMD ["python", "app.py"]
+

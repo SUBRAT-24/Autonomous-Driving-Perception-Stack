@@ -38,3 +38,4 @@ echo "    source .venv/bin/activate"
 echo "    python scripts/run_demo.py scenario:=pedestrian weather:=rain"
 echo "To run the Gradio web interface:"
 echo "    python app.py"
+

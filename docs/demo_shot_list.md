@@ -57,3 +57,4 @@
 ### Scene 7: Summary & GitHub Repository Link (2:20 – 2:30)
 - **Visual**: End screen featuring GitHub repository link, test pass badge (77/77 tests passed), and project credits.
 - **Text**: `github.com/SUBRAT-24/Autonomous-Driving-Perception-Stack`.
+

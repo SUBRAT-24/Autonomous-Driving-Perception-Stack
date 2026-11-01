@@ -112,3 +112,4 @@
   1. Multimodal sensor fusion (LiDAR point clouds + Radar Doppler velocity).
   2. 3D bounding box regression directly in vehicle coordinates.
   3. ModelOpt INT8 quantization for edge deployment on NVIDIA Jetson Orin.
+

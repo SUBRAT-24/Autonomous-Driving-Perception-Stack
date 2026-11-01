@@ -36,3 +36,4 @@ echo [USAGE] To launch the perception demo:
 echo     python scripts\run_demo.py scenario:=pedestrian weather:=rain
 echo [USAGE] To launch the interactive Gradio UI:
 echo     python app.py
+
