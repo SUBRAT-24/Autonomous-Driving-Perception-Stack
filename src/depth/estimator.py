@@ -243,7 +243,7 @@ class DepthEstimator:
 
         # Preprocessing: BGR -> RGB, resize, ImageNet normalization
         img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        img_resized = cv2.resize(img_rgb, (w_in, h_in), interpolation=cv2.INTER_CUBIC)
+        img_resized = cv2.resize(img_rgb, (w_in, h_in), interpolation=cv2.INTER_LINEAR)
         img_float = img_resized.astype(np.float32) / 255.0
 
         mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
@@ -256,14 +256,20 @@ class DepthEstimator:
 
         # Forward inference
         with torch.no_grad():
-            prediction = self.model(tensor)
+            if "cuda" in str(self.device):
+                with torch.amp.autocast("cuda"):
+                    prediction = self.model(tensor)
+            else:
+                prediction = self.model(tensor)
             # Squeeze to 2D
             if prediction.dim() == 4:
                 prediction = prediction.squeeze(1)
-            pred_2d = prediction[0].cpu().numpy()
+            pred_2d = prediction[0].float().cpu().numpy()
 
         # Resize back to original frame dimensions
-        depth_map = cv2.resize(pred_2d, (orig_w, orig_h), interpolation=cv2.INTER_CUBIC)
+        depth_map = cv2.resize(
+            pred_2d, (orig_w, orig_h), interpolation=cv2.INTER_LINEAR
+        )
 
         # Ensure positive values
         depth_map = np.maximum(depth_map, 1e-4).astype(np.float32)

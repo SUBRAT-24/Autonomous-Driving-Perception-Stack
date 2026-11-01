@@ -6,6 +6,9 @@ Ready for direct zero-copy integration into the ROS2 perception node.
 """
 
 from __future__ import annotations
+import os
+
+os.environ["YOLO_CONFIG_DIR"] = os.path.abspath("runs")
 
 import logging
 from dataclasses import dataclass
@@ -138,6 +141,19 @@ class Tracker:
             self._deepsort = None
 
         self._frame_count = 0
+        try:
+            import numpy as np
+
+            dummy = np.zeros((640, 640, 3), dtype=np.uint8)
+            self.model.track(
+                source=dummy,
+                tracker="bytetrack.yaml",
+                persist=True,
+                verbose=False,
+                device=self.device,
+            )
+        except Exception:
+            pass
         logger.info(
             "Tracker initialized successfully with backend: %s", self.tracker_type
         )
@@ -163,6 +179,7 @@ class Tracker:
                 conf=self.conf_thresh,
                 iou=self.iou_thresh,
                 device=self.device,
+                imgsz=640,
                 verbose=False,
             )
 

@@ -24,3 +24,9 @@ markers = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["src*"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+ignore = ["E402"]

@@ -155,4 +155,83 @@ _None yet — this is scaffolding._
 
 ---
 
-_Phases 5–8 will be appended here as we go._
+---
+
+## Phase 5 — CARLA + ROS2 Integration
+- **Status**: 🟢 Complete & Fully Verified
+- **Started**: 2026-11-01
+- **Completed**: 2026-11-01
+
+### Done
+- [x] Implemented perception_msgs ROS2 package with standard message definitions:
+  - TrackedObject.msg (id, class_name, confidence, bbox, distance_m, ttc_s)
+  - TrackedObjectArray.msg (Header, list of TrackedObject)
+  - Python dataclass mirrors and JSON serialization support (
+os2_ws.pth discovery).
+- [x] Implemented ROS2 compatibility layer (src/ros_compat/) providing:
+  - sensor_msgs/Image and CvBridge with high-efficiency JPEG serialization.
+  - High-performance in-memory pub-sub MessageBus.
+  - ROS2-compliant Node, Publisher, Subscription, Timer, Parameter, and spin.
+  - Lightweight RosbagRecorder and RosbagPlayer for scenario recording and replay.
+- [x] Implemented carla_camera_publisher node:
+  - Kinematic physics simulation with longitudinal acceleration/braking (-6.5 m/s²).
+  - 1280x720 RGB camera publishing /camera/image_raw at 20 FPS (90° FOV).
+  - Synchronized CARLA 24-bit ground-truth depth publishing /camera/depth_gt.
+  - Telemetry and vehicle control actuation (/vehicle/control).
+- [x] Implemented perception_node:
+  - Multi-task synchronous fusion pipeline running YOLOv8s Tracker, MiDaS Depth, and Lane Detector.
+  - Alternating execution cadence achieving up to 26.8 FPS throughput.
+  - Pinhole geometry cross-check and corridor gating for false-positive suppression.
+  - Publishes /perception/objects and /perception/overlay.
+  - Supports pytorch, onnx, and 	ensorrt backends via ROS parameter.
+- [x] Implemented iz_node:
+  - Renders 2D bounding boxes, track IDs, metric distance, TTC tags, and lane overlays.
+  - Renders top-right bird's-eye view (BEV) radar display with 10m–40m distance rings.
+  - Displays flashing red emergency collision warnings when TTC < 2.5s.
+  - Encodes and writes annotated demo videos to docs/results/demo_overlay.mp4.
+- [x] Implemented reactive emergency braking controller:
+  - Continuously monitors tracked objects in the ego lane corridor.
+  - When TTC < 2.5s or distance < 8.0m, commands full emergency braking (rake=1.00, 	hrottle=0.00).
+  - Verifiably halts the vehicle in front of obstacles without collision.
+- [x] Built CARLA scenario suite (carla_scenarios/):
+  - pedestrian_crossing: Lateral pedestrian traversal across the driving lane.
+  - lead_car_braking: Lead car deceleration and hard stop.
+  - 
+ight: Low-light driving with vehicle headlight cones.
+  - 
+ain: Wet road reflections with cyclic rain streak overlays.
+- [x] Implemented unified bringup launch:
+  - ROS2 launch file perception_bringup/launch/demo.launch.py.
+  - Unified CLI runner scripts/run_demo.py scenario:=pedestrian weather:=rain.
+- [x] Recorded one rosbag per scenario into data/sample/rosbags/:
+  - 
+osbag_pedestrian_crossing.bag
+  - 
+osbag_lead_car_braking.bag
+  - 
+osbag_night.bag
+  - 
+osbag_rain.bag
+- [x] Implemented comprehensive rosbag replay integration test suite (	ests/test_rosbag_replay.py):
+  - 8 tests passing verifying rosbag integrity, message deserialization, tracked object schema, emergency braking records, and message bus replay.
+
+### Verified Artefacts
+- **ROS2 Package**: 
+os2_ws/src/perception_msgs/
+- **ROS2 Nodes**: carla_camera_publisher, perception_node, iz_node
+- **ROS2 Launch File**: 
+os2_ws/src/perception_bringup/launch/demo.launch.py
+- **Recorded Rosbags**: data/sample/rosbags/*.bag (all 4 scenarios)
+- **Demo Videos**: docs/results/demo_overlay.mp4, docs/results/demo_{pedestrian,lead_car,night,rain}.mp4
+- **Documentation**: docs/results/carla_ros2_integration.md
+- **Exported ONNX Model**: 
+uns/detect/bdd100k_yolov8s/weights/best.onnx
+
+### Tests
+- pytest tests/test_rosbag_replay.py → 8 passed in 1.23s
+- pytest tests/ → 77 passed in 20.43s (100% across all phases)
+
+---
+
+_Phases 6–8 will be appended here as we go._
+
